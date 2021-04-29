@@ -95,7 +95,7 @@ void printArray(int *array, int size) {
 } 
 
 int main() { 
-    int array[9] = { 3, 7, 9, 5, 6, 1, 8, 2, 4 }; // 내림차순 선택정렬
+    int array[9] = { 3, 7, 9, 5, 6, 1, 8, 2, 4 }; // 내린차순 선택정렬
     selectionSort(array, 9, descending); 
     printArray(array, 9); // 오름차순 선택정렬 
     selectionSort(array, 9, ascending); 
@@ -109,20 +109,158 @@ int main() {
 
  ```
 
-#### 3. 함수 포인터 
+#### 3. 전역변수의 static은 파일 간의 전역변수를 의미한다.
+
+- 먼저 기본적으로 아래와 같이 선언하면 int는 전역변수가 된다.
 
 ```c
-void set_init(int PARAMETER, void* value){
+#include <stdio.h>
 
-  switch(PARAMETER){
-    case PARAMETER_SET_INIT:
-      ((STEP_MOTOR*)value)-> motor_id = step_motor.motor_id;
-      ((STEP_MOTOR*)value)-> dir = step_motor.dir;
-      ((STEP_MOTOR*)value)-> angle = step_motor.angle;
-      ((STEP_MOTOR*)value)-> rotation_number = step_motor.rotation_number;
-      ((STEP_MOTOR*)value)-> rpm = step_motor.rpm;
-    break;
-  }
+//전역변수 선언
+int data = 0;
+
+int main(){
+    printf("%d", data);
 }
+
+```
+
+> 위와 같이 선언된 변수는 전역으로서 다른 c파일 내부에서도 똑같이 int data를 선언하면 이전에 선언되어 있는 data를 참조해 오류가 발생한다.
+>
+> 즉, 다른 파일의 함수 또는 전역에서 해당 변수 값을 참조하게 된다.
+
+
+
+- 반면에 아래와 같이 선언한 int 변수는 전역변수이자 정적변수가 된다.
+
+```c
+#include <stdio.h>
+
+//전역변수에 정적변수 선언(같은 파일에서만 참조가능한 전역변수)
+static int data = 0;
+
+int main(){
+    printf("%d", data);
+}
+
+```
+
+
+> 기본 static(정적변수)는
+>
+> 1. while 함수 내에서도 한번만 초기화 된다.
+>
+> ```c
+> for(int i=0; i<10; i++){
+>     static int value = 1;
+>     printf("%d ", value);
+>     value ++;
+> }
+> 
+> //출력 값은 1 2 3 4 5 6 7 8 9 10이 된다.
+> //static은 한번만 실행된 다음 없어지는 줄이라 생각하면 된다.
+> ```
+>
+> 2. 프로그램이 종료될 때 까지 메모리에 남아있다. 즉, 저 while 문이 종료되어도 참조가 가능하다.
+
+
+
+- 이런 static을 위와 같이 전역변수 형태의 변수에 static을 선언하게 되면 다음과 같은 이점이 있다.
+
+> #### 파일 단위의 지역변수 같은 의미가 된다. (해당 파일에서만 사용가능한 변수가 된다.) => 객체를 파일 별로 코드 작성하여 무결성 보장
+>
+> 예를 들어 tmp1.c 파일과 tmp2.c 파일이 있는데 두 파일 모두에 똑같이 전역변수에 static int value를 선언하였다고 하자.
+>
+> 그렇다면 tmp3.c에서는 해당 tmp1.c 또는 tmp2.c에 있는 같은 이름의 변수를 선언할 수 있다 => 보통 프로그래머는 get, set을 통해 다른파일에 접근하곤 하는데, 만약 전역 정적변수가 아닌 전역 변수였다면, 같은 이름의 변수가 있던 것을 모르고, 또는 잘못 접근하고 있던 점을 모르고 컴파일 오류 없이 작동되어 잘못 참조되어 있던 것을 모를 가능성이 크다.
+>
+> 
+>
+> 이게 필요한 이유는 비슷한 구조를 가진  객체를 파일로 분리하면 같은 변수를 쓰는게 편할 때가 있기 때문이다.
+>
+> 
+>
+> 예를 들면 강아지 별로 c파일을 분리해 puppy 파일엔 int puppy_name, puppy_weight, puppy_age 를 선언하고, booldog파일엔 int booldog_name, booldog_weight,  booldog_age 로 선언할 수 있지만 그렇게 되면 강아지가 30마리면 30마리 별로 개별적인 변수 이름과 구조를 지어줘야 한다.
+>
+> 심지어 저 위의 경우는 name, weight, age 세 가지지만 개의 종류에 따라 특정 개에는 name, weight, age, ear_color로 만들어줘야하고, 특정 개에는 name, weight, age, tail, tail_color 등 여러 가지로 분리해서 구조체를 작성해야한다면 이전의 name, weight, age 구조를 그대로 다른 파일의 값에서 가져오는게 당연히 편할 것이다. 
+>
+> 
+>
+> 따라서 보통의 프로그래머는 puppy.c, booldog.c파일에 다음과 같이 선언한 구조를 h에서 가져와 분리해 선언한다.
+>
+> ```c
+> //dog.h
+> 
+> typedef struct puppy_dog_t{
+>  int name;
+>  int weight;
+>  int age;
+> }PUPPY_DOG;
+> 
+> typedef struct booldog_dog_t{
+>  int name;
+>  int weight;
+>  int age;
+> }BOOL_DOG;
+> ```
+>
+> ```c
+> //puppy1.c
+> 
+> PUPPY_DOG puppy{1,5,3};
+> ```
+>
+> ```c
+> //puppy2.c
+> PUPPY_DOG puppy{2,4,3};
+> ```
+>
+> 
+>
+>
+> ```c
+> //booldog1.c
+> BOOL_DOG booldog{2,15,6};
+> ```
+>
+> 이렇게 선언 된 구조가 전역 정적 구조체가 아닌 전역변수로 선언되어 같은 puppy1, puppy2 처럼 같은 종류의 다른 강아지의  name, weight, age를 main.c에서 가져온다면 둘 중에 어떻게 같은 강아지의 같은 변수의 강아지를 가져올 수 있을까?
+>
+> 또 puppy파일 별로 `PUPPY_DOG puppy1`, `PUPPY_DOG puppy2`로 불편하게 선언해줘야하는걸까? 만약 puppy1은 사고로 꼬리가 없어서 구조체 변수를 따로 선언해야한다면 모든 구조체의 get, set 함수들을 수정해야하는건가 하는 불편성이 존재한다.
+>
+> 
+>
+> 답은 전역변수를 static으로 선언해주고 puppy1 파일의 get, set만 변경해 main에서는 get, set을 함수포인터로 가져오면 둘의 같은 이름의 객체를 부르고, 같은 get, set을 코드로 실행시켜도 다른 실행을 할 수 있다. 즉, 변수를 변경하는 것을 모두 다 할 필요가 없다.
+>
+> 
+>
+> 또한 전역 변수를 참조하여 생기는 기타 오류를 찾는데 몇 천, 만줄을 분석하고 찾아볼 가능성을 없앨 수 있고, 같은 객체를 계속해서 분리하고 또 따로 설계하는데 변수 네이밍을 다시 또 바꿔 선언해야하는 문제를 해결할 수 있다.
+>
+> 
+>
+> 즉, 프로그래머가 파일 별로 개별 객체를 분류하고, 이를 맨위에 전역 정적변수로 선언하면 이는 파일 간 안전성을 보장하며, 다른 파일에서 해당 파일의 변수를 참조해야할 경우 get, set을 통해 접근하는 방식으로 코드를 짜는데 무결성을 보장할 수 있다.
+
+
+
+#### 4. 기본적으로 class와 struct의 별 차이는 없지만 세 가지가 있다.
+
+1. 맨 위에 struct를 선언하면 전역변수이지만 class는 기본적으로 static 구조이다. 즉,  전역으로 선언되지 않는다.
+2. 처음 선언한 class는 기본적으로 private로 같은 클래스 내에서만 사용할 수 있고, 바깥에서는 접근이 불가능하다. => class A 내부에 int a=10;이 있다면 main 함수에서 printf("%d", A.a)가 불가능하다.
+3. 만약 class를 public으로 선언하면 static struct와 차이가 없다.
+
+
+
+#### 5. typedef struct의 구조체 타입 네이밍은 생략 가능하다.
+
+```c
+//서로 같은 의미이다.
+typedef struct data_t{
+    int a;
+    int b;
+}DATA;
+
+typedef struct{
+    int a;
+    int b;
+}DATA;
+
 ```
 

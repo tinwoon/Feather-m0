@@ -19,6 +19,8 @@
 //   http://pololu.github.io/high-power-stepper-driver
 
 #include "step.h"
+#include "LED.h"
+#include "servo.h"
 #include <Arduino.h>
 #include <SPI.h>
 #include <HighPowerStepperDriver.h>
@@ -29,13 +31,27 @@ const uint8_t CSPin = 4;
 // go slower.  If you decrease the delay, the stepper motor will go faster, but
 // there is a limit to how fast it can go before it starts missing steps.
 const uint16_t StepPeriodUs = 2000;
- 
+
+static STEP_MOTOR_DATA step_motor_data;
+static STEP_MOTOR step_motor;
+static SERVO_MOTOR_DATA servo_motor_data;
+static SERVO_MOTOR servo_motor;
+static LED_DATA led_data;
+static LED led;
+
+
 HighPowerStepperDriver sd;
 
-int* ptr;
 
 void setup()
 {
+  //for data init
+  {
+    step_motor_data.get_init(PARAMETER_MOTOR_GET_INIT, &step_motor);
+    servo_motor_data.get_init(PARAMETER_MOTOR_GET_INIT, &servo_motor);
+    led_data.get_init(PARAMETER_LED_GET_INIT, &led);
+  }
+
   SPI.begin();
   sd.setChipSelectPin(CSPin);
 
@@ -66,14 +82,14 @@ void loop()
 {
   // Step in the default direction 1000 times.
   sd.setDirection(0);
-  int tmp_data =1;
-  ptr = &tmp_data;
+
   for(unsigned int x = 0; x < 1000; x++)
   {
     sd.step();
     delayMicroseconds(StepPeriodUs);
     Serial.print(PARAMETER_DIR);
-    set(PARAMETER_DIR, ptr);
+    step_motor.dir = x;
+    step_motor_data.set(PARAMETER_DIR, &step_motor.dir);
   }
 
   // Wait for 300 ms.
