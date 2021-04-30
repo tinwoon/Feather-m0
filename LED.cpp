@@ -177,3 +177,94 @@ static void get_LED_W(int* W){
   *W = led.W;
   return;
 }
+
+void NeoPixelLED::init(uint8_t dataPin, uint16_t ledNum)
+{
+  Adafruit_NeoPixel* p = new Adafruit_NeoPixel(ledNum, dataPin, NEO_GRBW + NEO_KHZ800);
+  p->begin();
+   
+  mDataPin = dataPin;
+  mLedNum = ledNum;
+  mPixels = p;
+}
+
+void NeoPixelLED::setLedsNumber(uint16_t ledNum)
+{
+  delete mPixels;
+  
+  Adafruit_NeoPixel* p = new Adafruit_NeoPixel(ledNum, mDataPin, NEO_GRBW + NEO_KHZ800);
+  p->begin();
+
+  mLedNum = ledNum;
+  mPixels = p;
+}
+
+void NeoPixelLED::setColorFullTest(uint8_t mode, uint8_t bright)
+{
+  mPixels->clear();
+
+  if(mode == 0)
+  {
+    for(int i=0; i<mLedNum; i++) 
+    {
+      mPixels->setPixelColor(i, mPixels->Color(bright, 0, 0, 0));
+    }
+    mPixels->show();  
+  }
+  if(mode == 1)
+  {
+    for(int i=0; i<mLedNum; i++) 
+    {
+      mPixels->setPixelColor(i, mPixels->Color(0, bright, 0, 0));
+    }
+    mPixels->show();  
+  }
+  if(mode == 2)
+  {
+    for(int i=0; i<mLedNum; i++) 
+    {
+      mPixels->setPixelColor(i, mPixels->Color(0, 0, bright, 0));
+    }
+    mPixels->show();  
+  }
+  if(mode == 3)
+  {
+    for(int i=0; i<mLedNum; i++) 
+    {
+      mPixels->setPixelColor(i, mPixels->Color(0, 0, 0, bright));
+    }
+    mPixels->show();  
+  }
+  
+  mPixels->show();  
+}
+
+void NeoPixelLED::setColor(uint16_t index, uint32_t color)
+{
+  mPixels->setPixelColor(index, color);
+}
+
+void NeoPixelLED::setColor(uint16_t index, uint8_t r, uint8_t g, uint8_t b, uint8_t w)
+{
+  mPixels->setPixelColor(index, r, g, b, w);
+}
+
+void NeoPixelLED::show()
+{
+  mPixels->show();  
+}
+
+void NeoPixelLED::clear()
+{
+  mPixels->clear();
+}
+//NeoPixelLED::~NeoPixelLED
+uint32_t NeoPixelLED::getPixelColor(uint16_t n)
+{
+  return mPixels->getPixelColor(n);
+}
+
+void NeoPixelLED::setBrightness(uint8_t b)
+{
+  mPixels->setBrightness(b);
+}

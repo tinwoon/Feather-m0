@@ -8,11 +8,11 @@
 
 
 
-![image-20210428105828682](C:\Users\HJKim\AppData\Roaming\Typora\typora-user-images\image-20210428105828682.png)
+![image](https://user-images.githubusercontent.com/18729679/116673663-a3bf7700-a9de-11eb-9c74-8f002e5b9a16.png)
 
 - 상단에 c로 선언한 파일에서는 기존의 ino와 다르게 Arduino.h 파일을 include 해줘야 한다.
 
-![image-20210428105922681](C:\Users\HJKim\AppData\Roaming\Typora\typora-user-images\image-20210428105922681.png)
+![image](https://user-images.githubusercontent.com/18729679/116673885-e2edc800-a9de-11eb-8ad2-60d00cd9ee67.png)
 
 
 
@@ -264,3 +264,32 @@ typedef struct{
 
 ```
 
+#### 6. DMA
+
+- DMA controller라는 주변 장치가 직접 메모리에 접근하여 값을 읽거나 쓸 수 있다.
+
+  > C 표준 라이브러리 함수 중에 memcpy()라는 것이 있다.  이 함수는 source address가 가리키는 주소에서 데이터를 읽어 destination address 주소가 가리키는 곳에 주어진 크기만큼 데이터를 복사해주는 동작을 수행한다.  매우 단순한 동작인데, 복사하고자 하는 크기가 작을 때는 별 문제가 없지만, 만약 그 크기가 커지게 되면 그만큼 많은 시간이 필요하게 된다.
+
+  > 임베디드 시스템에 사용되는 대부분의 CPU는 RISC 구조를 가지고 있는데, RISC의 대표적 특징은 모든 동작이 load, store 방식이란 점이다.
+  >
+  > 즉,  100바이트의 데이터를 복사하기 위해서는 100번의 load, store 동작을 수행하게 되고, 100번이 수행되었는지 확인하기 위하여 카운트 기능과 비교 구문도 같이 수행할 수 밖에 없게 된다.
+  >
+  > 
+  >
+  > 이러한 단순 메모리 복사 기능을 CPU가 수행하는 것이 아닌, 이러한 기능만 수행하는 주변 장치를 따로 만들어서 메모리 복사를 담당하고, CPU는 다른 동작을 수행하는 것이 효율이 높다.
+  >
+  > 
+  >
+  > 예를 들어, 9600bps로 설정된 UART를 통해서 32바이트 데이터를 송신하기 위한 시간을 계산해 보면 그 시간동안 CPU가 얼마만큼이나 많은 명령어를 처리할 수 있는지 놀랄것이다.  그러므로, UART 송신 기능을 DMA에게 처리하도록 하고, CPU는 그 시간동안 다른 동작을 수행하면 되는것이다.
+  >
+  > 출처: https://embed-avr.tistory.com/130 [AVR로 시작하는 임베디드]
+
+
+
+#### 7. Feather m0(SAMD21G)의 경우 아두이노의 #include <SoftwareSerial.h> 을 사용할 수 없다.
+
+- 핀 맵과 지원 구조가 다르기 때문에 해당 라이브러리를 사용할 수 없다.
+
+- [따라서 다음 내용에 있는 sercom을 통해 추가 통신을 확장할 수 있다.](https://velog.io/@wimes/%EC%95%84%EB%91%90%EC%9D%B4%EB%85%B8-M0-SAMD21G-%EC%97%90%EC%84%9C-%EC%83%88%EB%A1%9C%EC%9A%B4-serial-%EB%A7%8C%EB%93%A4%EA%B8%B0-qfk36n99m7)
+
+  

@@ -2,7 +2,7 @@
 //외부 라이브러리 include 이유는 모르겠지만 컴파일 확인
 
 #include "Arduino.h"
-#include "step.h"
+#include "step_motor.h"
 #include "main.h"
 #include <HighPowerStepperDriver.h>
 

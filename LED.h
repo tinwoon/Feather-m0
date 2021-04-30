@@ -1,4 +1,7 @@
 
+#ifndef LED_H
+#define LED_H
+
 #define PARAMETER_LED_ID 0
 #define PARAMETER_LED_R 1
 #define PARAMETER_LED_G 2
@@ -6,6 +9,11 @@
 #define PARAMETER_LED_W 4
 #define PARAMETER_LED_SET_INIT 5
 #define PARAMETER_LED_GET_INIT 6
+
+#define NEOPIXEL_DATA_PIN 6
+#define LED_NUM 90
+
+#include <Adafruit_NeoPixel_ZeroDMA.h>
 
 //stem motor 객체를 모두 set하기위해
 static void set_init(int PARAMETER, void* value);
@@ -54,3 +62,27 @@ typedef struct LED_DATA_TYPE{
   void (*get_LED_B)(int*);
   void (*get_LED_W)(int*);
 }LED_DATA;
+
+class NeoPixelLED
+{
+  public :
+    void init(uint8_t dataPin = NEOPIXEL_DATA_PIN, uint16_t ledNum = LED_NUM);
+    void setColorFullTest(uint8_t mode, uint8_t bright);
+    void setColor(uint16_t index, uint32_t color);
+    void setColor(uint16_t index, uint8_t r, uint8_t g, uint8_t b, uint8_t w);
+
+    void setLedsNumber(uint16_t ledNum);
+
+    
+    uint32_t getPixelColor(uint16_t n);
+    void  setBrightness(uint8_t b);
+
+    void clear();
+    void show();
+  private : 
+    uint8_t mDataPin;
+    Adafruit_NeoPixel* mPixels;
+    uint8_t mLedNum;
+};
+
+#endif

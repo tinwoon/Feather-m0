@@ -18,10 +18,11 @@
 // library's documentation for information about how to connect the driver:
 //   http://pololu.github.io/high-power-stepper-driver
 
-#include "step.h"
+#include "step_motor.h"
 #include "LED.h"
-#include "servo.h"
+#include "servo_motor.h"
 #include <Arduino.h>
+#include <Servo.h>
 #include <SPI.h>
 #include <HighPowerStepperDriver.h>
 const uint8_t CSPin = 4;
@@ -40,8 +41,8 @@ static LED_DATA led_data;
 static LED led;
 
 
-HighPowerStepperDriver sd;
-
+static HighPowerStepperDriver sd;
+static Servo servo;
 
 void setup()
 {
@@ -50,6 +51,7 @@ void setup()
     step_motor_data.get_init(PARAMETER_MOTOR_GET_INIT, &step_motor);
     servo_motor_data.get_init(PARAMETER_MOTOR_GET_INIT, &servo_motor);
     led_data.get_init(PARAMETER_LED_GET_INIT, &led);
+    servo.attach(9);
   }
 
   SPI.begin();
@@ -105,4 +107,10 @@ void loop()
 
   // Wait for 300 ms.
   delay(300);
+
+  servo.write(0);
+  delay(1000);
+  servo.write(180);
+  delay(1000);
+
 }
