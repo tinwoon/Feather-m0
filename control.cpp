@@ -10,34 +10,29 @@
 #include <Servo.h>
 #include <HighPowerStepperDriver.h>
 
-static SERVO_MOTOR_CONTROL servo_motor_control{ control };
-static STEP_MOTOR_CONTROL step_motor_control{ control };
-static LED_CONTROL led_control{ control };
 
-static STEP_MOTOR_DATA step_motor_data;
-static STEP_MOTOR step_motor;
-static SERVO_MOTOR_DATA servo_motor_data;
-static SERVO_MOTOR servo_motor;
-static LED_DATA led_data;
-static LED led;
+STEP_MOTOR_CONTROL step_motor_control{ control };
+SERVO_MOTOR_CONTROL servo_motor_control{ control };
+LED_CONTROL led_control{ control };
+
+extern STEP_MOTOR_DATA step_motor_data;
+extern SERVO_MOTOR_DATA servo_motor_data;
+extern LED_DATA led_data;
 
 static HighPowerStepperDriver sd;
 static Servo servo;
+static NeoPixelLED neoPixelLED;
 
 void control(int PARAMETER, void* value){
-
-    step_motor_data.get_init(PARAMETER_MOTOR_GET_INIT, &step_motor);
-    servo_motor_data.get_init(PARAMETER_MOTOR_GET_INIT, &servo_motor);
-    led_data.get_init(PARAMETER_LED_GET_INIT, &led);
 
     switch(PARAMETER){
         case PARAMETER_STEP_CONTROL_ALL:
             SPI.begin();
             //set motor id(CS or SCS pin init)
             {
-                if(step_motor.motor_id == 1) sd.setChipSelectPin(STEP_MOTOR_ID_1);
-                else if(step_motor.motor_id == 2) sd.setChipSelectPin(STEP_MOTOR_ID_2);
-                else if(step_motor.motor_id == 3) sd.setChipSelectPin(STEP_MOTOR_ID_3);
+                if(((STEP_MOTOR*)value)-> motor_id == 1) sd.setChipSelectPin(STEP_MOTOR_ID_1);
+                else if(((STEP_MOTOR*)value)-> motor_id == 2) sd.setChipSelectPin(STEP_MOTOR_ID_2);
+                else if(((STEP_MOTOR*)value)-> motor_id == 3) sd.setChipSelectPin(STEP_MOTOR_ID_3);
                 // Give the driver some time to power up.
                 delay(1);
                 sd.resetSettings();
@@ -46,14 +41,15 @@ void control(int PARAMETER, void* value){
 
             //set dir(DIR to SPI)
             {
-                if(step_motor.dir == 0) sd.setDirection(STEP_MOTOR_DIR_FORWARD);
-                else if(step_motor.dir == 1) sd.setDirection(STEP_MOTOR_DIR_REVERSE);
+                if(((STEP_MOTOR*)value)-> dir == 0) sd.setDirection(STEP_MOTOR_DIR_FORWARD);
+                else if(((STEP_MOTOR*)value)-> dir == 1) sd.setDirection(STEP_MOTOR_DIR_REVERSE);
             }
 
             //set step for 기준각 360/256 = 1.40625도 (STEP to SPI)
+            //256
             {
                 // Set the number of microsteps that correspond to one full step.
-                sd.setStepMode(HPSDStepMode::MicroStep256);
+                sd.setStepMode(HPSDStepMode::MicroStep128);
             }
 
             //the other setting
@@ -69,10 +65,10 @@ void control(int PARAMETER, void* value){
 
             //set angle and rotation_number and rpm
             {
-                for(int rotation_number = 0; rotation_number < step_motor.rotation_number; rotation_number++){
-                    for(int angle = 0; angle < step_motor.angle; angle++){
+                for(int rotation_number = 0; rotation_number < ((STEP_MOTOR*)value)->rotation_number; rotation_number++){
+                    for(int angle = 0; angle < ((STEP_MOTOR*)value)-> angle; angle++){
                         sd.step();
-                        delayMicroseconds(1000-(step_motor.rpm*10));
+                        delayMicroseconds(1001-( (((STEP_MOTOR*)value)-> rpm)*10 ) );
                     }
                 }
             }
@@ -82,14 +78,47 @@ void control(int PARAMETER, void* value){
         {
             //set servo motor id
             {
-            if(servo_motor.motor_id==0) servo.attach(SERVO_MOTOR_TILLT);
-            else if(servo_motor.motor_id==0) servo.attach(SERVO_MOTOR_PAN);
+            if(((SERVO_MOTOR*)value)-> motor_id==0) servo.attach(SERVO_MOTOR_TILLT);
+            else if(((SERVO_MOTOR*)value)-> motor_id==1) servo.attach(SERVO_MOTOR_PAN);
             }     
             //set servo angle
             {
-               servo.write(servo_motor.angle);
+               servo.write(((SERVO_MOTOR*)value)-> angle);
             }
             break;
+        }
+
+        case PARAMETER_LED_CONTROL_ALL:
+        {
+            //set led motor id
+            {
+                Serial.println("led control in is success");
+                Serial.print(((LED*)value)->LED_id);
+                Serial.print(((LED*)value)->R);
+                Serial.print(((LED*)value)->G);
+                Serial.print(((LED*)value)->B);
+                Serial.println(((LED*)value)->W);
+                switch( ((LED*)value)->LED_id){
+                    case 1:
+                        neoPixelLED.init(LED_DATA1, LED_NUM);
+                        Serial.print("led id init success and PARAMETER : ");
+                        Serial.println(((LED*)value)->LED_id);
+                        Serial.print("PIN_SERIAL_RX : ");
+                        Serial.println(PIN_SERIAL_RX);
+                        break;
+                    case 2:
+                        neoPixelLED.init(LED_DATA2, LED_NUM);
+                        break;
+                    default:
+                        neoPixelLED.init(LED_DATA1, LED_NUM);
+                }
+                neoPixelLED.setBrightness(255);
+                neoPixelLED.clear();
+                for(int led_num = 0; led_num < LED_NUM; led_num++){
+                    neoPixelLED.setColor(led_num, ((LED*)value)->R, ((LED*)value)->G, ((LED*)value)->B, ((LED*)value)->W );
+                }
+                neoPixelLED.show();
+            }
         }
     }
 }

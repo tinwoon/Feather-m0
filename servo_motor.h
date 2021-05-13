@@ -1,8 +1,8 @@
 
-#define PARAMETER_MOTOR_ID 0
-#define PARAMETER_ANGLE 1
-#define PARAMETER_MOTOR_SET_INIT 2
-#define PARAMETER_MOTOR_GET_INIT 3
+#define PARAMETER_SERVO_MOTOR_ID 0
+#define PARAMETER_SERVO_ANGLE 1
+#define PARAMETER_SERVO_MOTOR_SET_INIT 2
+#define PARAMETER_SERVO_MOTOR_GET_INIT 3
 
 //stem motor 객체를 모두 set하기위해
 static void set_init(int PARAMETER, void* value);

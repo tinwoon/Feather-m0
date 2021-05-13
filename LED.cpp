@@ -10,9 +10,9 @@
 
 //default 값 1,0,0,0,0
 
-static LED led{1,0,0,0,0};
+LED led{1,0,0,0,0};
 
-static LED_DATA led_data{
+LED_DATA led_data{
   set_init,
   get_init,
   set,
@@ -30,10 +30,10 @@ static LED_DATA led_data{
 };
 
 //value에 &step_motor를 넣을거임
-static void set_init(int PARAMETER, void* value){
+static void get_init(int PARAMETER, void* value){
 
   switch(PARAMETER){
-    case PARAMETER_LED_SET_INIT:
+    case PARAMETER_LED_GET_INIT:
       ((LED*)value)-> LED_id = led.LED_id;
       ((LED*)value)-> R = led.R;
       ((LED*)value)-> G = led.G;
@@ -44,10 +44,10 @@ static void set_init(int PARAMETER, void* value){
 }
 
 //value에 &step_motor를 넣을거임
-static void get_init(int PARAMETER, void* value){
+static void set_init(int PARAMETER, void* value){
 
   switch(PARAMETER){
-    case PARAMETER_LED_GET_INIT:
+    case PARAMETER_LED_SET_INIT:
       led.LED_id = ((LED*)value)-> LED_id;
       led.R = ((LED*)value)-> R;
       led.G = ((LED*)value)-> G;

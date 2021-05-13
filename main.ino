@@ -21,41 +21,72 @@
 #include "step_motor.h"
 #include "LED.h"
 #include "servo_motor.h"
-#include <Arduino.h>
+#include "control.h"
+#include "Serial_port.h"
+#include "booting_led.h"
+//#include <Arduino.h>
 #include <Servo.h>
 #include <SPI.h>
 #include <HighPowerStepperDriver.h>
-const uint8_t CSPin = 4;
+#include <Adafruit_NeoPixel_ZeroDMA.h>
+#include <iostream>
+#include <vector>
+#include "wiring_private.h"
+#include <MemoryFree.h>
 
-// This period is the length of the delay between steps, which controls the
-// stepper motor's speed.  You can increase the delay to make the stepper motor
-// go slower.  If you decrease the delay, the stepper motor will go faster, but
-// there is a limit to how fast it can go before it starts missing steps.
-const uint16_t StepPeriodUs = 2000;
+const uint8_t CSPin = 18;
 
-static STEP_MOTOR_DATA step_motor_data;
-static STEP_MOTOR step_motor;
-static SERVO_MOTOR_DATA servo_motor_data;
-static SERVO_MOTOR servo_motor;
-static LED_DATA led_data;
-static LED led;
+static int value = 0;
 
+static STEP_MOTOR step_motor_main;
+static SERVO_MOTOR servo_motor_main;
+static LED led_main;
+//static HighPowerStepperDriver sd;
+//static Servo servo;
 
-static HighPowerStepperDriver sd;
-static Servo servo;
+//set booting led
+extern BOOTING_LED_SET booting_led_set;
+
+//Data driver
+extern STEP_MOTOR_DATA step_motor_data;
+extern SERVO_MOTOR_DATA servo_motor_data;
+extern LED_DATA led_data;
+
+//Control driver
+extern SERVO_MOTOR_CONTROL servo_motor_control;
+extern STEP_MOTOR_CONTROL step_motor_control;
+extern LED_CONTROL led_control;
+
+//CMD driver
+extern SERIAL_CMD serial_cmd;
+static String cmd = "";
+static boolean stringComplete = false;
+
 
 void setup()
 {
-  //for data init
+  Serial.begin(9600);
+  cmd.reserve(200);
+  booting_led_set.set_booting_led_init();
+
+  //serial init
   {
-    step_motor_data.get_init(PARAMETER_MOTOR_GET_INIT, &step_motor);
-    servo_motor_data.get_init(PARAMETER_MOTOR_GET_INIT, &servo_motor);
-    led_data.get_init(PARAMETER_LED_GET_INIT, &led);
-    servo.attach(9);
+    Serial5.begin(9600);
+    pinPeripheral(31, PIO_SERCOM_ALT);
+    pinPeripheral(30, PIO_SERCOM_ALT);
+    Serial5.println("serial success");
   }
 
+  //for data init
+  {
+    step_motor_data.get_init(PARAMETER_STEP_MOTOR_GET_INIT, &step_motor_main);
+    servo_motor_data.get_init(PARAMETER_SERVO_MOTOR_GET_INIT, &servo_motor_main);
+    led_data.get_init(PARAMETER_LED_GET_INIT, &led_main);
+  }
+/*
   SPI.begin();
   sd.setChipSelectPin(CSPin);
+  
 
   // Give the driver some time to power up.
   delay(1);
@@ -78,20 +109,42 @@ void setup()
 
   // Enable the motor outputs.
   sd.enableDriver();
+*/
+
 }
 
 void loop()
 {
+  serialInput();
+  booting_led_set.set_booting_led(PARAMETER_SET_BOOTING_LED_REVERSE);
+  
+  //step motor 0시작
+  {
+    step_motor_data.get_init(PARAMETER_STEP_MOTOR_GET_INIT, &step_motor_main);
+    step_motor_control.control(PARAMETER_STEP_CONTROL_ALL, &step_motor_main);
+  }
+
+  //servo motor 시작
+  {
+    
+  }
+
+  //led시작
+  {
+    led_data.get_init(PARAMETER_LED_GET_INIT, &led_main);
+    led_control.control(PARAMETER_LED_CONTROL_ALL, &led_main);
+  }
+
+/*
   // Step in the default direction 1000 times.
   sd.setDirection(0);
-
   for(unsigned int x = 0; x < 1000; x++)
   {
     sd.step();
     delayMicroseconds(StepPeriodUs);
-    Serial.print(PARAMETER_DIR);
-    step_motor.dir = x;
-    step_motor_data.set(PARAMETER_DIR, &step_motor.dir);
+    //Serial.print(x);
+    //step_motor.dir = x;
+    //step_motor_data.set(PARAMETER_DIR, &step_motor.dir);
   }
 
   // Wait for 300 ms.
@@ -107,10 +160,34 @@ void loop()
 
   // Wait for 300 ms.
   delay(300);
+*/
+  //servo.write(0);
+  //delay(1000);
+  //servo.write(180);
+  //delay(1000);
+  while(Serial5.available()){
+    Serial.println("5 is available");
+    value = 10;
+  }
+  Serial5.println("serial success");
+  Serial.println(value);
+  Serial.print("free memory");
+  Serial.println(freeMemory());
 
-  servo.write(0);
-  delay(1000);
-  servo.write(180);
-  delay(1000);
 
+}
+
+void serialInput(){
+  while(Serial.available()){
+    char inChar = (char)Serial.read();
+    cmd += inChar;
+    if(inChar == '\n'){
+      stringComplete = true;
+    }
+    if(stringComplete){
+      serial_cmd.read_cmd(cmd);
+      cmd = "";
+      stringComplete = false;
+    } 
+  }
 }

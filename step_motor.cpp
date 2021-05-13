@@ -9,9 +9,9 @@
 
 //default 값 1,0,0,0,0
 
-static STEP_MOTOR step_motor{1,0,0,0,0};
+STEP_MOTOR step_motor{1,1,20,100,50};
 
-static STEP_MOTOR_DATA step_motor_data{
+STEP_MOTOR_DATA step_motor_data{
   set_init,
   get_init,
   set,
@@ -29,11 +29,15 @@ static STEP_MOTOR_DATA step_motor_data{
 };
 
 //value에 &step_motor를 넣을거임
-static void set_init(int PARAMETER, void* value){
-
+static void get_init(int PARAMETER, void* value){
+  //Serial.println("get init in");
   switch(PARAMETER){
-    case PARAMETER_MOTOR_SET_INIT:
+    case PARAMETER_STEP_MOTOR_GET_INIT:
+      //Serial.print("before: ");
+      //Serial.println(((STEP_MOTOR*)value)-> motor_id);
       ((STEP_MOTOR*)value)-> motor_id = step_motor.motor_id;
+      //Serial.print("after: ");
+      //Serial.println(((STEP_MOTOR*)value)-> motor_id);
       ((STEP_MOTOR*)value)-> dir = step_motor.dir;
       ((STEP_MOTOR*)value)-> angle = step_motor.angle;
       ((STEP_MOTOR*)value)-> rotation_number = step_motor.rotation_number;
@@ -43,10 +47,10 @@ static void set_init(int PARAMETER, void* value){
 }
 
 //value에 &step_motor를 넣을거임
-static void get_init(int PARAMETER, void* value){
+static void set_init(int PARAMETER, void* value){
   
   switch(PARAMETER){
-    case PARAMETER_MOTOR_GET_INIT:
+    case PARAMETER_STEP_MOTOR_SET_INIT:
       step_motor.motor_id =((STEP_MOTOR*)value)-> motor_id;
       step_motor.dir = ((STEP_MOTOR*)value)-> dir;
       step_motor.angle = ((STEP_MOTOR*)value)-> angle;
@@ -62,27 +66,27 @@ static void set(int PARAMETER, void* value){
   void (*set_para)(int* );
   
   switch(PARAMETER){
-     case PARAMETER_MOTOR_ID :  
+     case PARAMETER_STEP_MOTOR_ID :  
       set_para = set_motor_id;
       set_para((int*)value);
       break;
       
-    case PARAMETER_DIR:
+    case PARAMETER_STEP_MOTOR_DIR:
       set_para = set_dir;
       set_para((int*)value);
       break;
       
-    case PARAMETER_ANGLE:
+    case PARAMETER_STEP_MOTOR_ANGLE:
       set_para = set_angle;
       set_para((int*)value);
       break;
       
-    case PARAMETER_ROTATE:
+    case PARAMETER_STEP_MOTOR_ROTATE:
       set_para = set_rotate;
       set_para((int*)value);
       break;
       
-    case PARAMETER_RPM:
+    case PARAMETER_STEP_MOTOR_RPM:
       set_para = set_rpm;
       set_para((int*)value);
       break;
@@ -96,27 +100,27 @@ static void get(int PARAMETER, void* value){
   void (*get_para)(int* );
   
   switch(PARAMETER){
-     case PARAMETER_MOTOR_ID :  
+     case PARAMETER_STEP_MOTOR_ID :  
       get_para = get_motor_id;
       get_para((int*)value);
       break;
       
-    case PARAMETER_DIR:
+    case PARAMETER_STEP_MOTOR_DIR:
       get_para = get_dir;
       get_para((int*)value);
       break;
       
-    case PARAMETER_ANGLE:
+    case PARAMETER_STEP_MOTOR_ANGLE:
       get_para = get_angle;
       get_para((int*)value);
       break;
       
-    case PARAMETER_ROTATE:
+    case PARAMETER_STEP_MOTOR_ROTATE:
       get_para = get_rotate;
       get_para((int*)value);
       break;
       
-    case PARAMETER_RPM:
+    case PARAMETER_STEP_MOTOR_RPM:
       get_para = get_rpm;
       get_para((int*)value);
       break;

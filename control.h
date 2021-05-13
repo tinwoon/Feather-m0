@@ -17,9 +17,9 @@
 #define PARAMETER_LED_CONTROL_W             0x10
 
 //Each cs 3pin
-#define STEP_MOTOR_ID_1                     10
-#define STEP_MOTOR_ID_2                     11
-#define STEP_MOTOR_ID_3                     12
+#define STEP_MOTOR_ID_1                     A4
+#define STEP_MOTOR_ID_2                     8
+#define STEP_MOTOR_ID_3                     9
 
 //DIR
 #define STEP_MOTOR_DIR_FORWARD              0
@@ -29,8 +29,10 @@
 #define SERVO_MOTOR_PAN                     25
 #define SERVO_MOTOR_TILLT                   26
 
-#define LED_DATA1                           29
-#define LED_DATA2                           30
+#define LED_DATA1                           6
+#define LED_DATA2                           7
+
+
 
 typedef struct SERVO_MOTOR_CONTROL_TYPE{
     void (*control)(int, void*);
