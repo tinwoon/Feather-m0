@@ -1,8 +1,8 @@
 
 #define PARAMETER_STEP_MOTOR_DIR 0
-#define PARAMETER_STEP_MOTOR_ANGLE 1
-#define PARAMETER_STEP_MOTOR_ROTATE 2
-#define PARAMETER_STEP_MOTOR_RPM 3
+#define PARAMETER_STEP_MOTOR_STEP_ANGLE 1
+#define PARAMETER_STEP_MOTOR_STEP_ROTATE_NUM 2
+#define PARAMETER_STEP_MOTOR_STEP_DELAY 3
 #define PARAMETER_STEP_MOTOR_ID 4
 #define PARAMETER_STEP_MOTOR_SET_INIT 5
 #define PARAMETER_STEP_MOTOR_GET_INIT 6
@@ -20,22 +20,22 @@ static void set(int PARAMETER, void* value);
 static void get(int PARAMETER, void* value);
 static void set_motor_id(int* motor_id);
 static void set_dir(int* dir);
-static void set_angle(int* angle);
-static void set_rotate(int* rotate);
-static void set_rpm(int* rpm);
+static void set_step_angle(int* step_angle);
+static void set_step_rotate_num(int* step_rotate_num);
+static void set_step_delay(int* step_delay);
 static void get_motor_id(int* motor_id);
 static void get_dir(int* dir);
-static void get_angle(int* angle);
-static void get_rotate(int* rotate);
-static void get_rpm(int* rpm);
+static void get_step_angle(int* step_angle);
+static void get_step_rotate_num(int* step_rotate_num);
+static void get_step_delay(int* step_delay);
 
-//모터 ID, 방향, 회전각, 회전 수, 회전 속도
+//모터 ID, 방향, 스텝 단위 수, 스텝 회전 수, 회전 속도
 typedef struct STEP_MOTOR_TYPE{
   int motor_id;
   int dir;
-  int angle;
-  int rotation_number;
-  int rpm;
+  int step_angle;
+  int step_rotate_num;
+  int step_delay;
 }STEP_MOTOR;
 
 typedef struct STEP_MOTOR_DATA_TYPE{
@@ -45,12 +45,12 @@ typedef struct STEP_MOTOR_DATA_TYPE{
   void (*get)(int, void*);
   void (*set_motor_id)(int*);
   void (*set_dir)(int*);
-  void (*set_angle)(int*);
-  void (*set_rotate)(int*);
-  void (*set_rpm)(int*);
+  void (*set_step_angle)(int*);
+  void (*set_step_rotate_num)(int*);
+  void (*set_step_delay)(int*);
   void (*get_motor_id)(int*);
   void (*get_dir)(int*);
-  void (*get_angle)(int*);
-  void (*get_rotate)(int*);
-  void (*get_rpm)(int*);
+  void (*get_step_angle)(int*);
+  void (*get_step_rotate_num)(int*);
+  void (*get_step_delay)(int*);
 }STEP_MOTOR_DATA;

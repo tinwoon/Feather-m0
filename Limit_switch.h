@@ -1,0 +1,23 @@
+#define PARAMETER_SWITCH_1  38
+#define PARAMETER_LIMIT_SWITCH_1    4    
+#define PARAMETER_LIMIT_SWITCH_2    3    
+#define PARAMETER_LIMIT_SWITCH_3    1   
+#define PARAMETER_LIMIT_SWITCH_4    0
+
+
+typedef struct LIMIT_SWITCH_TYPE{
+    void (*switch_init)();
+    void (*swInterrupt)();
+    void (*LIMIT_MOTOR_ONE_SW_ONE_INTERRUPT)();
+    void (*LIMIT_MOTOR_ONE_SW_TWO_INTERRUPT)();
+    void (*LIMIT_MOTOR_TWO_SW_ONE_INTERRUPT)();
+    void (*LIMIT_MOTOR_TWO_SW_TWO_INTERRUPT)();
+}LIMIT_SWITCH;
+
+
+void switch_init();
+void swInterrupt();
+void LIMIT_MOTOR_ONE_SW_ONE_INTERRUPT();
+void LIMIT_MOTOR_ONE_SW_TWO_INTERRUPT();
+void LIMIT_MOTOR_TWO_SW_ONE_INTERRUPT();
+void LIMIT_MOTOR_TWO_SW_TWO_INTERRUPT();

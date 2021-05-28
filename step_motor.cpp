@@ -18,14 +18,14 @@ STEP_MOTOR_DATA step_motor_data{
   get,
   set_motor_id,
   set_dir,
-  set_angle,
-  set_rotate,
-  set_rpm,
+  set_step_angle,
+  set_step_rotate_num,
+  set_step_delay,
   get_motor_id,
   get_dir,
-  get_angle,
-  get_rotate,
-  get_rpm
+  get_step_angle,
+  get_step_rotate_num,
+  get_step_delay,
 };
 
 //value에 &step_motor를 넣을거임
@@ -33,15 +33,11 @@ static void get_init(int PARAMETER, void* value){
   //Serial.println("get init in");
   switch(PARAMETER){
     case PARAMETER_STEP_MOTOR_GET_INIT:
-      //Serial.print("before: ");
-      //Serial.println(((STEP_MOTOR*)value)-> motor_id);
       ((STEP_MOTOR*)value)-> motor_id = step_motor.motor_id;
-      //Serial.print("after: ");
-      //Serial.println(((STEP_MOTOR*)value)-> motor_id);
       ((STEP_MOTOR*)value)-> dir = step_motor.dir;
-      ((STEP_MOTOR*)value)-> angle = step_motor.angle;
-      ((STEP_MOTOR*)value)-> rotation_number = step_motor.rotation_number;
-      ((STEP_MOTOR*)value)-> rpm = step_motor.rpm;
+      ((STEP_MOTOR*)value)-> step_angle = step_motor.step_angle;
+      ((STEP_MOTOR*)value)-> step_rotate_num = step_motor.step_rotate_num;
+      ((STEP_MOTOR*)value)-> step_delay = step_motor.step_delay;
     break;
   }
 }
@@ -53,9 +49,9 @@ static void set_init(int PARAMETER, void* value){
     case PARAMETER_STEP_MOTOR_SET_INIT:
       step_motor.motor_id =((STEP_MOTOR*)value)-> motor_id;
       step_motor.dir = ((STEP_MOTOR*)value)-> dir;
-      step_motor.angle = ((STEP_MOTOR*)value)-> angle;
-      step_motor.rotation_number = ((STEP_MOTOR*)value)-> rotation_number;
-      step_motor.rpm = ((STEP_MOTOR*)value)-> rpm;
+      step_motor.step_angle = ((STEP_MOTOR*)value)-> step_angle;
+      step_motor.step_rotate_num = ((STEP_MOTOR*)value)-> step_rotate_num;
+      step_motor.step_delay = ((STEP_MOTOR*)value)-> step_delay;
     break;
   }
 }
@@ -76,18 +72,18 @@ static void set(int PARAMETER, void* value){
       set_para((int*)value);
       break;
       
-    case PARAMETER_STEP_MOTOR_ANGLE:
-      set_para = set_angle;
+    case PARAMETER_STEP_MOTOR_STEP_ANGLE:
+      set_para = set_step_angle;
       set_para((int*)value);
       break;
       
-    case PARAMETER_STEP_MOTOR_ROTATE:
-      set_para = set_rotate;
+    case PARAMETER_STEP_MOTOR_STEP_ROTATE_NUM:
+      set_para = set_step_rotate_num;
       set_para((int*)value);
       break;
       
-    case PARAMETER_STEP_MOTOR_RPM:
-      set_para = set_rpm;
+    case PARAMETER_STEP_MOTOR_STEP_DELAY:
+      set_para = set_step_delay;
       set_para((int*)value);
       break;
   }
@@ -110,18 +106,18 @@ static void get(int PARAMETER, void* value){
       get_para((int*)value);
       break;
       
-    case PARAMETER_STEP_MOTOR_ANGLE:
-      get_para = get_angle;
+    case PARAMETER_STEP_MOTOR_STEP_ANGLE:
+      get_para = get_step_angle;
       get_para((int*)value);
       break;
       
-    case PARAMETER_STEP_MOTOR_ROTATE:
-      get_para = get_rotate;
+    case PARAMETER_STEP_MOTOR_STEP_ROTATE_NUM:
+      get_para = get_step_rotate_num;
       get_para((int*)value);
       break;
       
-    case PARAMETER_STEP_MOTOR_RPM:
-      get_para = get_rpm;
+    case PARAMETER_STEP_MOTOR_STEP_DELAY:
+      get_para = get_step_delay;
       get_para((int*)value);
       break;
   }
@@ -140,18 +136,18 @@ static void set_dir(int* dir){
   return;
 }
 
-static void set_angle(int* angle){
-  step_motor.angle = *angle;
+static void set_step_angle(int* step_angle){
+  step_motor.step_angle = *step_angle;
   return;
 }
 
-static void set_rotate(int* rotation_number){
-  step_motor.rotation_number = *rotation_number;
+static void set_step_rotate_num(int* step_rotate_num){
+  step_motor.step_rotate_num = *step_rotate_num;
   return;
 }
 
-static void set_rpm(int* rpm){
-  step_motor.rpm = *rpm;
+static void set_step_delay(int* step_delay){
+  step_motor.step_delay = *step_delay;
   return;
 }
 
@@ -166,17 +162,17 @@ static void get_dir(int* dir){
   return;
 }
 
-static void get_angle(int* angle){
-  *angle = step_motor.angle;
+static void get_step_angle(int* step_angle){
+  *step_angle = step_motor.step_angle;
   return;
 }
 
-static void get_rotate(int* rotation_number){
-  *rotation_number = step_motor.rotation_number;
+static void get_step_rotate_num(int* step_rotate_num){
+  *step_rotate_num = step_motor.step_rotate_num;
   return;
 }
 
-static void get_rpm(int* rpm){
-  *rpm = step_motor.rpm;
+static void get_step_delay(int* step_delay){
+  *step_delay = step_motor.step_delay;
   return;
 }
