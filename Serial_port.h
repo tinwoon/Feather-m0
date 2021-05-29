@@ -15,6 +15,7 @@ typedef struct SERIAL_CMD_TYPE{
     void (*serialInput)();
     int (*return_check_sum)(std::vector< String > &);
     void (*read_motor_stop)();
+    void (*serial_interrupt_Input)();
 }SERIAL_CMD;
 
 
@@ -24,3 +25,4 @@ void serial_init();
 void serialInput();
 int return_check_sum(std::vector< String > &cmd_stack);
 void read_motor_stop();
+void serial_interrupt_Input();

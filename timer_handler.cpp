@@ -74,6 +74,6 @@ void TC3_Handler() {
 
 void serial_interrupt(){
   if(Serial5.available()){
-    if(motor_one_stepping || motor_two_stepping) serial_cmd.serialInput();
+    if(motor_one_stepping || motor_two_stepping) serial_cmd.serial_interrupt_Input();
   }
 }

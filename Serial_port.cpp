@@ -16,13 +16,14 @@
 #include "wiring_private.h"
 
 
-SERIAL_CMD serial_cmd{ read_cmd, attach_cmd, serial_init, serialInput, return_check_sum, read_motor_stop };
+SERIAL_CMD serial_cmd{ read_cmd, attach_cmd, serial_init, serialInput, return_check_sum, read_motor_stop, serial_interrupt_Input };
 static STEP_MOTOR step_motor_one_init{ 1, 1, 1, 0, 1300};
 static STEP_MOTOR step_motor_two_init{ 2, 1, 1, 0, 1300};
 static STEP_MOTOR step_motor_cmd;
 static SERVO_MOTOR servo_motor_cmd;
 static LED led_cmd;
 static String cmd = "";
+static String interrupt_cmd = "";
 static boolean stringComplete = false;
 
 //data driver
@@ -103,6 +104,7 @@ void attach_cmd(int PARAMETER, std::vector< String > &cmd_stack){
               step_motor_control.control(PARAMETER_STEP_CONTROL_ALL, &step_motor_two_init);
             }
             else step_motor_control.control(PARAMETER_STEP_CONTROL_ALL, &step_motor_cmd);
+
             break;
         }
 
@@ -143,6 +145,7 @@ void serial_init(){
     Serial5.begin(9600);
     Serial.begin(9600);
     cmd.reserve(200);
+    interrupt_cmd.reserve(200);
   }
 }
 
@@ -162,6 +165,17 @@ void serialInput(){
   }
 }
 
+void serial_interrupt_Input(){
+    while(Serial5.available()){
+    char inChar = (char)Serial5.read();
+    interrupt_cmd += inChar;
+    if(inChar == '\n'){
+      if(motor_one_stepping || motor_two_stepping) serial_cmd.read_motor_stop();
+      interrupt_cmd = "";
+    }
+  }
+}
+
 int return_check_sum(std::vector< String > &cmd_stack){
     int ans = 0;
     for(int i=2; i<cmd_stack.size()-1; i++){
@@ -173,16 +187,16 @@ int return_check_sum(std::vector< String > &cmd_stack){
 void read_motor_stop(){
     std::vector< String > cmd_stack;
     int prv_token = 0;
-    int length = cmd.length();
+    int length = interrupt_cmd.length();
     for(int k=0; k<length; k++){
-        int token = cmd.indexOf('#', prv_token);
+        int token = interrupt_cmd.indexOf('#', prv_token);
         if(token == -1){
-            String Sep_String = cmd.substring(prv_token, length);
+            String Sep_String = interrupt_cmd.substring(prv_token, length);
             cmd_stack.emplace_back(Sep_String);
             prv_token = token + 1;
             break;
         }
-        String Sep_String = cmd.substring(prv_token, token);
+        String Sep_String = interrupt_cmd.substring(prv_token, token);
         cmd_stack.emplace_back(Sep_String);
         prv_token = token + 1;
     }

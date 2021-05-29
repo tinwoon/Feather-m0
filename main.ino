@@ -60,7 +60,8 @@ extern LIMIT_SWITCH limit_switch;
 extern TIMER_HANDLER timer_handler;
 
 //motor state
-extern bool motor_stepping;
+extern bool motor_one_stepping;
+extern bool motor_two_stepping;
 
 
 void setup()
