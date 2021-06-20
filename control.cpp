@@ -482,12 +482,18 @@ void init(int PARAMETER){
                 servo_pan.attach(SERVO_MOTOR_PAN, 1000, 2000);
                 servo_tilt.attach(SERVO_MOTOR_TILLT, 1000, 2000);
 
-                servo_pan.write(110);
-                delay(200);
+                for(int k=0; k<=110; k +=10){
+                    servo_pan.write(k);
+                    delay(70);
+                }
                 servo_pan.detach();
+                
+                delay(1000);
 
-                servo_tilt.write(90);
-                delay(200);
+                for(int k=0; k<=90; k +=10){
+                    servo_tilt.write(k);
+                    delay(70);
+                }
                 servo_tilt.detach();
             }
             break;
