@@ -64,6 +64,8 @@ void control(int PARAMETER, void* value){
                 break;
             } 
 
+            //위치 초기화를 state로 판단해서 넣으려고 작성한 코드 => if(((STEP_MOTOR*)value)-> dir == 3) 같은 구문을 state로 판단하려고 작성한 내용이지만 사용을 하고 있지는 않다.
+            //나중에 변경하기 위해 삭제는 하지 않음. 
             if(((STEP_MOTOR*)value)-> dir == 3) state = PARAMETER_CONTROL_INIT_LOC;
             else state = PARAMETER_CONTROL_NOT_INIT_LOC;
 
@@ -638,6 +640,9 @@ void control_init(int PARAMETER, void* value, int motor_id_index){
     switch(PARAMETER){
         case PARAMETER_CONTROL_INIT_BEGIN:
             control_imergency_init();
+            //이론적으로는 control_stepping_init() 도 넣는게 맞지만
+            //코드 논리 상으론 동작 중이지 않은 상태에서 control이 수행될 리가 없으므로 넣지 않았다.
+            //control_step_motor_data_init()도 마찬가지
             break;
         case PARAMETER_CONTROL_INIT_END:
             control_imergency_init();
