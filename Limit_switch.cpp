@@ -9,6 +9,7 @@
 #include "LED.h"
 #include "Serial_port.h"
 #include "Limit_switch.h"
+#include "buzzer.h"
 #include <string.h>
 #include <Servo.h>
 #include <HighPowerStepperDriver.h>
@@ -19,8 +20,13 @@
 
 LIMIT_SWITCH limit_switch{ switch_init, swInterrupt, LIMIT_MOTOR_ONE_SW_ONE_INTERRUPT, LIMIT_MOTOR_ONE_SW_TWO_INTERRUPT, LIMIT_MOTOR_TWO_SW_ONE_INTERRUPT, LIMIT_MOTOR_TWO_SW_TWO_INTERRUPT };
 
-extern bool step_motor_one_imergency;
-extern bool step_motor_two_imergency;
+extern bool step_motor_one_one_imergency;
+extern bool step_motor_one_two_imergency;
+extern bool step_motor_two_one_imergency;
+extern bool step_motor_two_two_imergency;
+extern bool step_motor_three_imergency;
+
+extern BUZZER buzzer;
 
 void switch_init(){
     pinMode(PARAMETER_SWITCH_1, INPUT);
@@ -39,31 +45,35 @@ void switch_init(){
 void swInterrupt(){
     if(digitalRead(PARAMETER_SWITCH_1) != LOW) return;
     Serial5.println("WARNING : STOP SW ON!");
-    step_motor_one_imergency = true;
-    step_motor_two_imergency = true;
+    buzzer.warning();
+    step_motor_one_one_imergency = true;
+    step_motor_one_two_imergency = true;
+    step_motor_two_one_imergency = true;
+    step_motor_two_two_imergency = true;
+    step_motor_three_imergency = true;
 }
 
 void LIMIT_MOTOR_ONE_SW_ONE_INTERRUPT(){
     if(digitalRead(PARAMETER_LIMIT_SWITCH_1) != LOW) return;
     Serial5.println("LIMIT ONE ONE IS OCCURED");
-    step_motor_one_imergency = true;
+    step_motor_one_one_imergency = true;
 }
 
 void LIMIT_MOTOR_ONE_SW_TWO_INTERRUPT(){
     if(digitalRead(PARAMETER_LIMIT_SWITCH_2) != LOW) return;
     Serial5.println("LIMIT ONE TWO IS OCCURED");
-    step_motor_one_imergency = true;
+    step_motor_one_two_imergency = true;
 }
 
 void LIMIT_MOTOR_TWO_SW_ONE_INTERRUPT(){
     if(digitalRead(PARAMETER_LIMIT_SWITCH_3) != LOW) return;
     Serial5.println("LIMIT TWO ONE IS OCCURED");
-    step_motor_two_imergency = true;
+    step_motor_two_one_imergency = true;
 }
 
 void LIMIT_MOTOR_TWO_SW_TWO_INTERRUPT(){
     if(digitalRead(PARAMETER_LIMIT_SWITCH_4) != LOW) return;
     Serial5.println("LIMIT TWO TWO IS OCCURED");
-    step_motor_two_imergency = true;
+    step_motor_two_two_imergency = true;
 }
 

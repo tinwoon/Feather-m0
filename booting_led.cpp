@@ -14,8 +14,9 @@ static BOOTING_LED booting_led{LOW, HIGH};
 static unsigned long prevMillis = 0;
 
 void set_booting_led(int PARAMETER){
-    
+    //현재 시간을 측정
     unsigned long currentMillis = millis();
+    //측정된 시간이 이전 시간보다 1초 이상 지났다면 상태를 변환한다.
     if(currentMillis - prevMillis >= 1000){
         prevMillis = currentMillis;
 

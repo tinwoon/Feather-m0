@@ -29,7 +29,7 @@ LED_DATA led_data{
   get_LED_W,
 };
 
-//value에 &step_motor를 넣을거임
+//value에 &LED를 넣을거임
 static void get_init(int PARAMETER, void* value){
 
   switch(PARAMETER){
@@ -43,7 +43,7 @@ static void get_init(int PARAMETER, void* value){
   }
 }
 
-//value에 &step_motor를 넣을거임
+//value에 &LED를 넣을거임
 static void set_init(int PARAMETER, void* value){
 
   switch(PARAMETER){
@@ -131,7 +131,6 @@ static void set_LED_id(int* LED_id){
   return;
 }
 
-//dir 0 and 1 is everything
 static void set_LED_R(int* R){
   led.R = *R;
   return;
@@ -157,7 +156,6 @@ static void get_LED_id(int* LED_id){
   return;
 }
 
-//dir 0 and 1 is everything
 static void get_LED_R(int* R){
   *R = led.R;
   return;

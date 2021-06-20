@@ -26,6 +26,7 @@
 #include "booting_led.h"
 #include "Limit_switch.h"
 #include "timer_handler.h"
+#include "buzzer.h"
 #include <Servo.h>
 #include <SPI.h>
 #include <HighPowerStepperDriver.h>
@@ -59,20 +60,20 @@ extern LIMIT_SWITCH limit_switch;
 //timer handler
 extern TIMER_HANDLER timer_handler;
 
-//motor state
-extern bool motor_one_stepping;
-extern bool motor_two_stepping;
 
+//buzzer
+extern BUZZER buzzer;
 
 void setup()
 {
+  buzzer.buzzer_init();
   serial_cmd.serial_init();
   booting_led_set.set_booting_led_init();
   limit_switch.switch_init();
   step_motor_control.init(PARAMETER_STEP_CONTROL_INIT_ALL);
   servo_motor_control.init(PARAMETER_SERVO_CONTROL_INIT_ALL);
   led_control.init(PARAMETER_LED_CONTROL_INIT_ALL);
-  timer_handler.startTimer(10);
+  //timer_handler.startTimer(10);
 }
 
 void loop()

@@ -28,13 +28,7 @@ typedef struct SERVO_MOTOR_DATA_TYPE{
   void (*set)(int, void*);
   void (*get)(int, void*);
   void (*set_motor_id)(int*);
-  void (*set_dir)(int*);
   void (*set_angle)(int*);
-  void (*set_rotate)(int*);
-  void (*set_rpm)(int*);
   void (*get_motor_id)(int*);
-  void (*get_dir)(int*);
   void (*get_angle)(int*);
-  void (*get_rotate)(int*);
-  void (*get_rpm)(int*);
 }SERVO_MOTOR_DATA;
