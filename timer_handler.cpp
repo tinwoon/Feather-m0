@@ -15,6 +15,7 @@ TIMER_HANDLER timer_handler{ startTimer, setTimerFrequency, TC3_Handler, serial_
 extern SERIAL_CMD serial_cmd;
 extern bool motor_one_stepping;
 extern bool motor_two_stepping;
+extern bool motor_three_stepping;
 
 void setTimerFrequency(int frequencyHz) {
   int compareValue = (CPU_HZ / (TIMER_PRESCALER_DIV * frequencyHz)) - 1;
@@ -25,6 +26,7 @@ void setTimerFrequency(int frequencyHz) {
   TC->CC[0].reg = compareValue;
   Serial.println(TC->COUNT.reg);
   Serial.println(TC->CC[0].reg);
+  //
   while (TC->STATUS.bit.SYNCBUSY == 1);
 }
 
@@ -74,6 +76,6 @@ void TC3_Handler() {
 
 void serial_interrupt(){
   if(Serial5.available()){
-    if(motor_one_stepping || motor_two_stepping) serial_cmd.serial_interrupt_Input();
+    if(motor_one_stepping || motor_two_stepping || motor_three_stepping) serial_cmd.serial_interrupt_Input();
   }
 }

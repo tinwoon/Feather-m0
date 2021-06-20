@@ -38,17 +38,30 @@
 #define LED_DATA1                           6
 #define LED_DATA2                           7
 
+#define PARAMETER_CONTROL_INIT_BEGIN        0x14
+#define PARAMETER_CONTROL_INIT_END          0x15
 
+#define PARAMETER_CONTROL_INIT_LOC          0x16 
+#define PARAMETER_CONTROL_NOT_INIT_LOC      0x17
+
+
+
+
+typedef struct STEP_MOTOR_CONTROL_TYPE{
+    void (*control)(int, void*);
+    void (*init)(int);
+    void (*controlling)(int, void*);
+    void (*control_init)(int, void*, int);
+    void (*control_data_update)(void*, int);
+    void (*control_imergency_init)();
+    void (*control_stepping_init)();
+    void (*control_step_motor_data_init)();
+}STEP_MOTOR_CONTROL;
 
 typedef struct SERVO_MOTOR_CONTROL_TYPE{
     void (*control)(int, void*);
     void (*init)(int);
 }SERVO_MOTOR_CONTROL;
-
-typedef struct STEP_MOTOR_CONTROL_TYPE{
-    void (*control)(int, void*);
-    void (*init)(int);
-}STEP_MOTOR_CONTROL;
 
 typedef struct LED_CONTROL_TYPE{
     void (*control)(int, void*);
@@ -57,3 +70,9 @@ typedef struct LED_CONTROL_TYPE{
 
 void control(int PARAMETER, void* value);
 void init(int PARAMETER);
+void controlling(int PARAMETER, void* value); 
+void control_init(int PARAMETER, void* value, int motor_id_index);
+void control_data_update(void* value, int motor_id_index);
+void control_imergency_init();
+void control_stepping_init();
+void control_step_motor_data_init();
